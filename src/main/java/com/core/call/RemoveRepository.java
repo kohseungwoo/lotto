@@ -1,0 +1,85 @@
+package com.core.call;
+
+import java.util.Arrays;
+import java.util.Random;
+import java.util.Scanner;
+
+/** 
+ * @Params size(int)
+ * size에 따른 줄 + 제거숫자 + n자리 출력
+ */
+public class RemoveRepository implements CallRepository{
+
+    @Override
+    public void findNumber(int size){
+        Scanner sc = new Scanner(System.in);
+        
+        System.out.println("원하는 임의의 숫자 개수를 입력하세요. : ");
+        int in = sc.nextInt();
+
+        System.out.println("임의의 제거 숫자를 입력해주세요.");
+        
+        int[] removeLottoNumbers = new int[in];
+        for (int i = 0; i < in; i++) {
+            int number;
+            do {
+                number = sc.nextInt();
+                if(number > 45){
+                    System.out.println("임의의 숫자는 45보다 작아야 합니다. 재 입력 바랍니다.");
+                }
+                
+            } while (contains(removeLottoNumbers, number, true) || number > 45); // 중복된 번호 방지
+            removeLottoNumbers[i] = number;
+        }
+        sc.close();
+
+        for (int i = 0; i < size; i++) {
+            int[] lottoNumbers = generateLottoNumbers(removeLottoNumbers);
+            Arrays.sort(lottoNumbers); // 번호를 정렬하여 출력
+            
+            System.out.println(Arrays.toString(lottoNumbers));
+        }
+    }
+
+    private int[] generateLottoNumbers(int[] removeLottoNumbers) {
+        int[] lottoNumbers = new int[6];
+        Random random = new Random();
+
+        for (int i = 0; i < 6; i++) {
+            int randomNumber;
+            do {
+                // 1에서 45까지의 무작위 숫자 생성
+                randomNumber = random.nextInt(45) + 1;
+            } while (contains(lottoNumbers, removeLottoNumbers, randomNumber, false)); // 중복된 번호 방지
+
+            lottoNumbers[i] = randomNumber;
+        }
+
+        return lottoNumbers;
+    }
+
+    private boolean contains(int[] arr, int[] remove, int number, boolean debug) {
+        for (int r : remove) {
+            if (r == number) {
+                return true;
+            }
+        }
+
+        for (int n : arr) {
+            if (n == number) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean contains(int[] arr, int number, boolean debug) {
+        for (int n : arr) {
+            if (n == number) {
+                if(debug) System.out.println("중복 된 숫자를 입력할 수 없습니다. :" + number);
+                return true;
+            }
+        }
+        return false;
+    }
+}   
